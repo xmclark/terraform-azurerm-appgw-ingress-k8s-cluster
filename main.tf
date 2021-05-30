@@ -1,11 +1,11 @@
 # # Locals block for hardcoded names.
 locals {
-  backend_address_pool_name      = "${azurerm_virtual_network.test.name}-beap"
-  frontend_port_name             = "${azurerm_virtual_network.test.name}-feport"
-  frontend_ip_configuration_name = "${azurerm_virtual_network.test.name}-feip"
-  http_setting_name              = "${azurerm_virtual_network.test.name}-be-htst"
-  listener_name                  = "${azurerm_virtual_network.test.name}-httplstn"
-  request_routing_rule_name      = "${azurerm_virtual_network.test.name}-rqrt"
+  backend_address_pool_name      = "${azurerm_virtual_network.virtual_network.name}-beap"
+  frontend_port_name             = "${azurerm_virtual_network.virtual_network.name}-feport"
+  frontend_ip_configuration_name = "${azurerm_virtual_network.virtual_network.name}-feip"
+  http_setting_name              = "${azurerm_virtual_network.virtual_network.name}-be-htst"
+  listener_name                  = "${azurerm_virtual_network.virtual_network.name}-httplstn"
+  request_routing_rule_name      = "${azurerm_virtual_network.virtual_network.name}-rqrt"
 
   #networkContributorRole         = "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4d97b98b-1d4f-4787-a291-c67834d212e7')]"
 
@@ -17,8 +17,8 @@ data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
-# User Assigned Idntities
-resource "azurerm_user_assigned_identity" "testIdentity" {
+# User Assigned Identities
+resource "azurerm_user_assigned_identity" "user_assigned_identity" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
 
@@ -28,7 +28,7 @@ resource "azurerm_user_assigned_identity" "testIdentity" {
 }
 
 #Virtual Networks
-resource "azurerm_virtual_network" "test" {
+resource "azurerm_virtual_network" "virtual_network" {
   name                = var.virtual_network_name
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -41,26 +41,27 @@ resource "azurerm_virtual_network" "test" {
 
   subnet {
     name           = "appgwsubnet" # Has to be hardcoded to this name.
+    # TODO: Link to why this must be hard-coded.
     address_prefix = var.app_gateway_subnet_address_prefix
   }
 
   tags = var.tags
 }
 
-data "azurerm_subnet" "kubesubnet" {
+data "azurerm_subnet" "kubernetes_subnet" {
   name                 = var.aks_subnet_name
-  virtual_network_name = azurerm_virtual_network.test.name
+  virtual_network_name = azurerm_virtual_network.virtual_network.name
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
 data "azurerm_subnet" "appgwsubnet" {
   name                 = "appgwsubnet" #Hardcoded to this name.
-  virtual_network_name = azurerm_virtual_network.test.name
+  virtual_network_name = azurerm_virtual_network.virtual_network.name
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
 # Public Ip
-resource "azurerm_public_ip" "test" {
+resource "azurerm_public_ip" "public_ip" {
   name                         = "publicIp1"
   location                     = data.azurerm_resource_group.rg.location
   resource_group_name          = data.azurerm_resource_group.rg.name
@@ -98,7 +99,7 @@ resource "azurerm_application_gateway" "network" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.test.id
+    public_ip_address_id = azurerm_public_ip.public_ip.id
   }
 
   backend_address_pool {
@@ -131,32 +132,32 @@ resource "azurerm_application_gateway" "network" {
   tags = var.tags
 
   depends_on = [
-    azurerm_virtual_network.test,
-    azurerm_public_ip.test,
+    azurerm_virtual_network.virtual_network,
+    azurerm_public_ip.public_ip,
   ]
 }
 
 resource "azurerm_role_assignment" "ra1" {
-  scope                = data.azurerm_subnet.kubesubnet.id
+  scope                = data.azurerm_subnet.kubernetes_subnet.id
   role_definition_name = "Network Contributor"
   principal_id         = var.aks_service_principal_object_id
 
-  depends_on = [azurerm_virtual_network.test]
+  depends_on = [azurerm_virtual_network.virtual_network]
 }
 
 resource "azurerm_role_assignment" "ra2" {
-  scope                = azurerm_user_assigned_identity.testIdentity.id
+  scope                = azurerm_user_assigned_identity.user_assigned_identity.id
   role_definition_name = "Managed Identity Operator"
   principal_id         = var.aks_service_principal_object_id
-  depends_on           = [azurerm_user_assigned_identity.testIdentity]
+  depends_on           = [azurerm_user_assigned_identity.user_assigned_identity]
 }
 
 resource "azurerm_role_assignment" "ra3" {
   scope                = azurerm_application_gateway.network.id
   role_definition_name = "Contributor"
-  principal_id         = azurerm_user_assigned_identity.testIdentity.principal_id
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
   depends_on = [
-    azurerm_user_assigned_identity.testIdentity,
+    azurerm_user_assigned_identity.user_assigned_identity,
     azurerm_application_gateway.network,
   ]
 }
@@ -164,9 +165,9 @@ resource "azurerm_role_assignment" "ra3" {
 resource "azurerm_role_assignment" "ra4" {
   scope                = data.azurerm_resource_group.rg.id
   role_definition_name = "Reader"
-  principal_id         = azurerm_user_assigned_identity.testIdentity.principal_id
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
   depends_on = [
-    azurerm_user_assigned_identity.testIdentity,
+    azurerm_user_assigned_identity.user_assigned_identity,
     azurerm_application_gateway.network,
   ]
 }
@@ -197,7 +198,7 @@ resource "azurerm_kubernetes_cluster" "test" {
     node_count      = var.aks_agent_count
     vm_size         = var.aks_agent_vm_size
     os_disk_size_gb = var.aks_agent_os_disk_size
-    vnet_subnet_id  = data.azurerm_subnet.kubesubnet.id
+    vnet_subnet_id  = data.azurerm_subnet.kubernetes_subnet.id
     # dns_prefix     MISSING
   }
 
@@ -214,7 +215,7 @@ resource "azurerm_kubernetes_cluster" "test" {
   }
 
   depends_on = [
-    azurerm_virtual_network.test,
+    azurerm_virtual_network.virtual_network,
     azurerm_application_gateway.network,
   ]
   tags = var.tags

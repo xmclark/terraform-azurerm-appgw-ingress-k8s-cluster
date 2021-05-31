@@ -10,3 +10,5 @@
 
 # jetbrains IDEs
 .idea
+
+examples/basic/.terraform.lock.hcl

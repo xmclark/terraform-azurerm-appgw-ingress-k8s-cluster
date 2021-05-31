@@ -28,15 +28,19 @@ Follow the prompts to create an Active Directory Tenant for your domain.
 
 Then [follow the guide][add_ad_to_sub_guide] to ensure the new AD is associated with the subscription.
 
-## Step 2: Create a Server Principal
+## Step 3: Add an AD application for terraform
 
-Continue in the Cloud Shell:
+From the AD tenant page, find the App Registrations. Onboard an new application called Terraform. 
 
-```shell
-az ad sp create-for-rbac --name DemoAksAdmin
-```
+## Step 4: Create the client id and client secret
+
+From the "Terraform" AD Application page, select "Certificates & secrets". Create a new client secret. Save the client id, client secret, and tenent id.
 
 __Save the output server principal credentials to a safe place.__
+
+## Step 5: Add Directory-level role binding to service principal
+
+Visit the AD Page and select "Roles and administrators". Find "Global administrator". Search for members "Terraform" and add the binding.
 
 [subscription_blade]: https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade
 [add_ad_to_sub_guide]: https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp;clcid=0x9 

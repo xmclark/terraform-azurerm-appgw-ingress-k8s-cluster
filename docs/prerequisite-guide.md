@@ -26,6 +26,8 @@ Visit the AD Page and click "Switch Tenant".
 
 Follow the prompts to create an Active Directory Tenant for your domain. 
 
+Then [follow the guide][add_ad_to_sub_guide] to ensure the new AD is associated with the subscription.
+
 ## Step 2: Create a Server Principal
 
 Continue in the Cloud Shell:
@@ -37,3 +39,5 @@ az ad sp create-for-rbac --name DemoAksAdmin
 __Save the output server principal credentials to a safe place.__
 
 [subscription_blade]: https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade
+[add_ad_to_sub_guide]: https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp;clcid=0x9 
+

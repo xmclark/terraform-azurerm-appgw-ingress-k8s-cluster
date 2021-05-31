@@ -53,24 +53,21 @@ resource "azuread_service_principal" "k8s" {
   tags = ["k8s", "control-plane"]
 }
 
-resource "azurerm_role_assignment" "example" {
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Contributor"
-  principal_id         = data.azurerm_client_config.config.object_id
+resource "azurerm_resource_group" "test" {
+  name     = "k8s"
+  location = "West US"
+  tags = {
+    environment = "dev"
+    costcenter  = "it"
+  }
 }
 
+resource "azurerm_role_assignment" "k8s_contributor" {
+  scope                = azurerm_resource_group.test.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.k8s.id
+}
 
-//
-//resource "azurerm_resource_group" "test" {
-//  name     = "testResourceGroup1"
-//  location = "West US"
-//
-//  tags {
-//    environment = "dev"
-//    costcenter  = "it"
-//  }
-//}
-//
 //module "appgw-ingress-k8s-cluster" {
 //  source                              = "Azure/appgw-ingress-k8s-cluster/azurerm"
 //  version                             = "0.1.0"
@@ -85,4 +82,4 @@ resource "azurerm_role_assignment" "example" {
 //    costcenter  = "it"
 //  }
 //}
-//
+

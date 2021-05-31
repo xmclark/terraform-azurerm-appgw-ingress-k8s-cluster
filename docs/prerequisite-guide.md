@@ -42,6 +42,10 @@ __Save the output server principal credentials to a safe place.__
 
 Visit the AD Page and select "Roles and administrators". Find "Global administrator". Search for members "Terraform" and add the binding.
 
+## Step 6: Add resources role binding
+
+Visit the the subscription page, and select "Access control (IAM)". Click "Add" to add a new binding. Add "Owner". Alternatively, add "Contributor" and less permissive bindings for creating role bindings.
+
 [subscription_blade]: https://portal.azure.com/#blade/Microsoft_Azure_Billing/SubscriptionsBlade
 [add_ad_to_sub_guide]: https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp;clcid=0x9 
 

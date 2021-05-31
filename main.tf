@@ -56,6 +56,7 @@ data "azurerm_subnet" "kubernetes_subnet" {
 
 data "azurerm_subnet" "appgwsubnet" {
   name                 = "appgwsubnet" #Hardcoded to this name.
+  # TODO: Link to why this must be hard-coded.
   virtual_network_name = azurerm_virtual_network.virtual_network.name
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
@@ -63,6 +64,7 @@ data "azurerm_subnet" "appgwsubnet" {
 # Public Ip
 resource "azurerm_public_ip" "public_ip" {
   name                         = "publicIp1"
+  # TODO: rename this IP
   location                     = data.azurerm_resource_group.rg.location
   resource_group_name          = data.azurerm_resource_group.rg.name
   allocation_method            = "Static"
@@ -79,6 +81,7 @@ resource "azurerm_application_gateway" "network" {
   sku {
     name     = var.app_gateway_sku
     tier     = "Standard_v2"
+    # TODO: make tier and capacity as vars
     capacity = 2
   }
 

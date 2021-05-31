@@ -42,20 +42,12 @@ module "appgw-ingress-k8s-cluster" {
 
 ```
 
-## Authors
-Originally created by [Vaijanath Angadihiremath](http://github.com/VaijanathB)
-# Contributing
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
+## Attributions
+Originally created by [Vaijanath Angadihiremath](http://github.com/VaijanathB) and forked from [Azure/terraform-azurerm-appgw-ingress-k8s-cluster][fork].
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+## License
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+This source is republished with [MIT license][license], just as [the original upstream][fork].
 
 [azure_application_gateway]: https://azure.microsoft.com/en-us/services/application-gateway/
 [azure_kubernetes_service]: https://azure.microsoft.com/en-us/services/kubernetes-service/
@@ -63,3 +55,5 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 [azure_agki_diagram]: https://github.com/Azure/application-gateway-kubernetes-ingress/raw/master/docs/images/architecture.png
 [docs_install_new]: docs/install-new.md
 [azure_ingress_tutorials]: https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/tutorial.md
+[fork]: https://github.com/Azure/terraform-azurerm-appgw-ingress-k8s-cluster
+[license]: /LICENSE

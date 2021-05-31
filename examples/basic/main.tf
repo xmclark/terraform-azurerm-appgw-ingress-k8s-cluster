@@ -18,18 +18,18 @@ provider "azuread" {
   tenant_id = var.tenant_id
 }
 
-resource "azuread_application" "example" {
-  homepage                   = "http://homepage"
-  identifier_uris            = ["http://uri"]
-  reply_urls                 = ["http://replyurl"]
+resource "azuread_application" "k8s" {
+  homepage                   = "http://k8s-homepage"
+  identifier_uris            = ["http://k8s-uri"]
+  reply_urls                 = ["http://k8s-replyurl"]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
-  name = "example"
+  name = "k8s"
 }
 
-resource "azuread_service_principal" "example" {
-  application_id               = azuread_application.example.application_id
+resource "azuread_service_principal" "k8s" {
+  application_id               = azuread_application.k8s.application_id
   app_role_assignment_required = false
 
-  tags = ["example", "tags", "here"]
+  tags = ["k8s", "control-plane"]
 }

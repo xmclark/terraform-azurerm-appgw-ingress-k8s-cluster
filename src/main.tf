@@ -23,6 +23,7 @@ resource "azurerm_user_assigned_identity" "user_assigned_identity" {
   location            = data.azurerm_resource_group.rg.location
 
   name = "identity1"
+  # TODO: why is this called '1'?
 
   tags = var.tags
 }
